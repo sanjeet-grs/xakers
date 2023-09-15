@@ -13,8 +13,8 @@ jobs:
     - name: Install yarn
       run: npm install -g yarn
     - name: Install dependencies
-      run: Generate artifacts
-    - name: Build debug
+      run: yarn
+    - name: Generate artifacts
       run: cd android && ./gradlew assembleDebug
     - name: Save artifacts
       uses: actions/upload-artifact@v3

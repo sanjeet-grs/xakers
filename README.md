@@ -1,2 +1,2 @@
 # xakers
-React Native App [Android 
+React Native App [Android + iOS] for creating SHA

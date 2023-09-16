@@ -3,6 +3,18 @@ run-name: ${{ github.actor }} is building an app
 on: [push]
 
 jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project sources
+        uses: actions/checkout@v3
+      - name: Install yarn 
+        run: npm install -g yarn
+      - name: Install dependencies
+        run: yarn
+      - name: Run unit tests
+      - run: yarn test
+
   build:
     runs-on: ubuntu-latest
     steps:

@@ -1,0 +1,6 @@
+appId: com.xakers
+---
+- launchApp:
+    appId: "com.xakers"
+    clearState: true
+- assertVisible: "Welcome to React Native"

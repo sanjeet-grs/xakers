@@ -32,6 +32,25 @@ jobs:
     - name: Save artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: ${{github.ref_name}}-debug.apk
-        path: android/app/build/outputs/apk/debug/app-debug.apk
+        name: ${{github.ref_name}}-release.apk
+        path: android/app/build/outputs/apk/release/app-release.apk
         if-no-files-found: error
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2.1.1
+      - name: Install app
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          script: adb install ${{github.ref_name}}-release.apk
+      - name: Setup maestro
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          export PATH="$PATH":"$HOME/.maestro/bin"
+      - name: Run test
+        run: maestro test android-e2e.yaml   
+        
+

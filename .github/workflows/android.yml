@@ -38,13 +38,19 @@ jobs:
   test:
     needs: build
     runs-on: macos-latest
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        # test on minimum supported and last three version
+        android: [21, 31, 32, 33, 34]
+      fail-fast: false
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2.1.1
       - name: Install app
         uses: reactivecircus/android-emulator-runner@v2.28.0
         with:
-          api-level: 31
+          api-level: ${{ matrix.android }}
           target: google_apis
           emulator-options: >-
             -no-boot-anim -no-audio -no-snapshot -no-window -camera-back none

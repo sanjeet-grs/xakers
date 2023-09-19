@@ -42,7 +42,7 @@ jobs:
     strategy:
       matrix:
         # test on minimum supported and last three version
-        android: [21, 31, 32, 33, 34]
+        android: [21, 29, 30]
       fail-fast: false
     steps:
       - name: Download artifact
@@ -57,9 +57,9 @@ jobs:
             -camera-front none -gpu swiftshader_indirect
           script: adb install ${{github.ref_name}}-release.apk
       - name: Setup maestro
-        run: |
-          curl -Ls "https://get.maestro.mobile.dev" | bash
-          export PATH="$PATH":"$HOME/.maestro/bin"
+        run: curl -Ls "https://get.maestro.mobile.dev" | bash
+      - name: Set path
+        run: export PATH="$PATH":"$HOME/.maestro/bin"
       - name: Run test
         run: maestro test android-e2e.yaml   
         

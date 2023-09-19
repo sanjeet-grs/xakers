@@ -46,11 +46,13 @@ jobs:
       fail-fast: false
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v2.1.1
+        uses: actions/download-artifact@v3
+      - name: Display structure of downloaded files
+        run: ls -R
       - name: Install app
         uses: reactivecircus/android-emulator-runner@v2.28.0
         with:
-          api-level: ${{ matrix.android }}
+          api-level: 29
           target: google_apis
           emulator-options: >-
             -no-boot-anim -no-audio -no-snapshot -no-window -camera-back none

@@ -45,6 +45,10 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
+          target: google_apis
+          emulator-options: >-
+            -no-boot-anim -no-audio -no-snapshot -no-window -camera-back none
+            -camera-front none -gpu swiftshader_indirect
           script: adb install ${{github.ref_name}}-release.apk
       - name: Setup maestro
         run: |

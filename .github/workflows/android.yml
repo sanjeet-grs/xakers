@@ -32,18 +32,13 @@ jobs:
     - name: Save artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: ${{github.ref_name}}-release.apk
+        name: ${{github.ref_name}}
         path: android/app/build/outputs/apk/release/app-release.apk
         if-no-files-found: error
   test:
     needs: build
     runs-on: macos-latest
     timeout-minutes: 20
-    strategy:
-      matrix:
-        # test on minimum supported and last three version
-        android: [21, 29, 30]
-      fail-fast: false
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v3
@@ -57,7 +52,7 @@ jobs:
           emulator-options: >-
             -no-boot-anim -no-audio -no-snapshot -no-window -camera-back none
             -camera-front none -gpu swiftshader_indirect
-          script: adb install ${{github.ref_name}}-release.apk
+          script: adb install ${{github.ref_name}}/app-release.apk
       - name: Setup maestro
         run: curl -Ls "https://get.maestro.mobile.dev" | bash
       - name: Set path

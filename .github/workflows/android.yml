@@ -44,7 +44,7 @@ jobs:
       - name: Install app
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 33
+          api-level: 31
           target: google_apis
           emulator-options: >-
             -no-boot-anim -no-audio -no-snapshot -no-window -camera-back none

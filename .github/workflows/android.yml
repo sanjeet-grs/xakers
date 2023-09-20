@@ -55,9 +55,7 @@ jobs:
           script: adb install ${{github.ref_name}}/app-release.apk
       - name: Setup maestro
         run: curl -Ls "https://get.maestro.mobile.dev" | bash
-      - name: Set path
-        run: export PATH="$PATH":"$HOME/.maestro/bin"
       - name: Run test
-        run: maestro test android-e2e.yaml   
+        run: $HOME/.maestro/bin/maestro test android-e2e.yaml   
         
 

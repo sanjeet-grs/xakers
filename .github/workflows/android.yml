@@ -8,7 +8,7 @@ jobs:
     steps:
       - name: Checkout project sources
         uses: actions/checkout@v3
-      - name: Install yarn 
+      - name: Install yarn
         run: npm install -g yarn
       - name: Install dependencies
         run: yarn
@@ -19,22 +19,22 @@ jobs:
     needs: verify
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout project sources
-      uses: actions/checkout@v3
-    - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2.8.0
-    - name: Install yarn
-      run: npm install -g yarn
-    - name: Install dependencies
-      run: yarn
-    - name: Generate artifacts
-      run: cd android && ./gradlew assembleRelease
-    - name: Save artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{github.ref_name}}
-        path: android/app/build/outputs/apk/release/app-release.apk
-        if-no-files-found: error
+      - name: Checkout project sources
+        uses: actions/checkout@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2.8.0
+      - name: Install yarn
+        run: npm install -g yarn
+      - name: Install dependencies
+        run: yarn
+      - name: Generate artifacts
+        run: cd android && ./gradlew assembleRelease
+      - name: Save artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{github.ref_name}}
+          path: android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
   test:
     needs: build
     runs-on: macos-latest
@@ -51,11 +51,10 @@ jobs:
       - name: Install app and run tests
         uses: reactivecircus/android-emulator-runner@v2.28.0
         with:
-          api-level: 29
+          api-level: 33
+          arch: x86_64
           target: google_apis
           emulator-options: >-
             -no-boot-anim -no-audio -no-snapshot -no-window -camera-back none
             -camera-front none -gpu swiftshader_indirect
-          script: adb install ${{github.ref_name}}/app-release.apk && export MAESTRO_DRIVER_STARTUP_TIMEOUT=60000 && $HOME/.maestro/bin/maestro test android-e2e.yaml  
-        
-
+          script: adb install ${{github.ref_name}}/app-release.apk && export MAESTRO_DRIVER_STARTUP_TIMEOUT=60000 && $HOME/.maestro/bin/maestro test android-e2e.yaml

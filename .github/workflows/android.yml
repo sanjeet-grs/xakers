@@ -57,4 +57,4 @@ jobs:
           emulator-options: >-
             -no-boot-anim -no-audio -no-snapshot -no-window -camera-back none
             -camera-front none -gpu swiftshader_indirect
-          script: adb install ${{github.ref_name}}/app-release.apk && export MAESTRO_DRIVER_STARTUP_TIMEOUT=60000 && $HOME/.maestro/bin/maestro test android-e2e.yaml
+          script: adb install ${{github.ref_name}}/app-release.apk && export MAESTRO_DRIVER_STARTUP_TIMEOUT=300000 && $HOME/.maestro/bin/maestro test android-e2e.yaml

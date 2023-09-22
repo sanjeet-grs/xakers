@@ -37,9 +37,17 @@ jobs:
           if-no-files-found: error
   test:
     needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
+    runs-on: ubunut-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        api-level: [33] 
     steps:
+      - name: Enable KVM group perms
+        run: |
+            echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+            sudo udevadm control --reload-rules
+            sudo udevadm trigger --name-match=kvm
       - name: Checkout project sources
         uses: actions/checkout@v3
       - name: Download artifact
@@ -48,16 +56,40 @@ jobs:
         run: ls -R
       - name: Setup maestro
         run: curl -Ls "https://get.maestro.mobile.dev" | bash
+      - name: AVD cache
+        uses: actions/cache@v3
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: ${{ runner.os }}-avd-api${{ matrix.api-level }}
+      - name: Create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 30
+        uses: reactivecircus/android-emulator-runner@d94c3fbe4fe6a29e4a5ba47c12fb47677c73656b # pin@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          # We don't need the Google APIs, but the default images are not available for 32+
+          target: ${{ matrix.api-level >= 32 && 'google_apis' || 'default' }}
+          force-avd-creation: false
+          ram-size: 2048M
+          arch: x86_64
+          disk-size: 4096M
+          emulator-options: -no-window -accel on -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
       - name: Install app and run tests
         uses: reactivecircus/android-emulator-runner@v2.28.0
+        timeout-minutes: 30
         with:
-          api-level: 33
-          arch: x86_64
-          target: google_apis
+          api-level: ${{ matrix.api-level }}
+          # We don't need the Google APIs, but the default images are not available for 32+
+          target: ${{ matrix.api-level >= 32 && 'google_apis' || 'default' }}
+          force-avd-creation: false
           ram-size: 2048M
+          arch: x86_64
           disk-size: 4096M
+          emulator-options: -no-window -accel on -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
-          emulator-options: >-
-            -no-boot-anim -no-audio -no-snapshot -no-window -camera-back none
-            -camera-front none -gpu swiftshader_indirect
           script: adb install ${{github.ref_name}}/app-release.apk && export MAESTRO_DRIVER_STARTUP_TIMEOUT=600000 && $HOME/.maestro/bin/maestro test android-e2e.yaml
